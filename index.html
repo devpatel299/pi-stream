@@ -13,23 +13,23 @@
       height: 100vh;
       margin: 0;
       font-family: "Inter", sans-serif;
-      overflow: hidden;
     }
     #pi {
-      font-size: 2.5rem;
+      font-size: clamp(1.5rem, 5vw, 3rem); /* responsive */
       letter-spacing: 2px;
-      max-width: 90%;
       text-align: center;
+      max-width: 90%;
       line-height: 1.6;
       word-wrap: break-word;
     }
     .digit {
       opacity: 0;
-      animation: fadeIn 0.6s forwards;
+      display: inline-block;
+      animation: fadeIn 0.5s forwards;
     }
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+      from { opacity: 0; transform: scale(0.8); }
+      to { opacity: 1; transform: scale(1); }
     }
   </style>
 </head>
@@ -37,7 +37,7 @@
   <div id="pi">3.</div>
 
   <script>
-    // π spigot generator (produces digits forever)
+    // π digit generator (spigot algorithm)
     function* piGenerator() {
       let q=1n, r=0n, t=1n, k=1n, n=3n, l=3n;
       while (true) {
@@ -63,93 +63,17 @@
     const piStream = piGenerator();
     const piElement = document.getElementById("pi");
 
-    setInterval(() => {
+    // Append digits in the center dynamically
+    function addDigit() {
       const nextDigit = piStream.next().value;
       const span = document.createElement("span");
       span.className = "digit";
       span.textContent = nextDigit;
       piElement.appendChild(span);
-
-      // Auto-scroll so digits always stay visible
-      window.scrollTo(0, document.body.scrollHeight);
-    }, 500); // 1 digit every 0.5 sec
-  </script>
-</body>
-</html><!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>π Infinite Stream</title>
-  <style>
-    body {
-      background: #0d1117;
-      color: #f0f6fc;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-      font-family: "Inter", sans-serif;
-      overflow: hidden;
-    }
-    #pi {
-      font-size: 2.5rem;
-      letter-spacing: 2px;
-      max-width: 90%;
-      text-align: center;
-      line-height: 1.6;
-      word-wrap: break-word;
-    }
-    .digit {
-      opacity: 0;
-      animation: fadeIn 0.6s forwards;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-  </style>
-</head>
-<body>
-  <div id="pi">3.</div>
-
-  <script>
-    // π spigot generator (produces digits forever)
-    function* piGenerator() {
-      let q=1n, r=0n, t=1n, k=1n, n=3n, l=3n;
-      while (true) {
-        if (4n*q+r-t < n*t) {
-          yield Number(n);
-          let nr = 10n*(r-n*t);
-          n = ((10n*(3n*q+r)) / t) - 10n*n;
-          q *= 10n;
-          r = nr;
-        } else {
-          let nr = (2n*q+r)*l;
-          let nn = (q*(7n*k+2n)+r*l)/(t*l);
-          q *= k;
-          t *= l;
-          l += 2n;
-          k += 1n;
-          n = nn;
-          r = nr;
-        }
-      }
     }
 
-    const piStream = piGenerator();
-    const piElement = document.getElementById("pi");
-
-    setInterval(() => {
-      const nextDigit = piStream.next().value;
-      const span = document.createElement("span");
-      span.className = "digit";
-      span.textContent = nextDigit;
-      piElement.appendChild(span);
-
-      // Auto-scroll so digits always stay visible
-      window.scrollTo(0, document.body.scrollHeight);
-    }, 500); // 1 digit every 0.5 sec
+    // Add a digit every 400ms
+    setInterval(addDigit, 400);
   </script>
 </body>
 </html>
