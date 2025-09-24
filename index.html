@@ -1,55 +1,142 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>π Infinite Stream</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Interactive π Stream</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet" />
   <style>
+    /* --- THEME DEFINITIONS --- */
+    /* Theme 1: Midnight (Default) */
+    .theme-midnight {
+      --bg-color-start: #0d1117; /* from source 1 */
+      --bg-color-end: #161b22;
+      --text-color: #c9d1d9; /* similar to source 2 */
+      --accent-color: #58a6ff;
+      --title-color: #f0f6fc; /* from source 2 */
+    }
+    /* Theme 2: Charcoal */
+    .theme-charcoal {
+      --bg-color-start: #1e1e1e;
+      --bg-color-end: #252526;
+      --text-color: #cccccc;
+      --accent-color: #ffd700;
+      --title-color: #ffffff;
+    }
+    /* Theme 3: Slate */
+    .theme-slate {
+      --bg-color-start: #2c3e50;
+      --bg-color-end: #34495e;
+      --text-color: #ecf0f1;
+      --accent-color: #1abc9c;
+      --title-color: #ffffff;
+    }
+
     body {
-      background: #0d1117;
-      color: #f0f6fc;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-      font-family: "Inter", sans-serif;
+      margin: 0; /* from source 2 */
+      font-family: 'Roboto Mono', monospace;
+      display: flex; /* from source 2 */
+      flex-direction: column;
+      justify-content: center; /* from source 2 */
+      align-items: center; /* from source 2 */
+      height: 100vh; /* from source 2 */
+      text-align: center; /* from source 4 */
+      transition: background 0.5s ease;
+      /* Apply theme variables */
+      background: linear-gradient(135deg, var(--bg-color-start), var(--bg-color-end));
+      color: var(--text-color);
     }
+
+    .container {
+      max-width: 90%; /* from source 4 */
+    }
+
+    h1 {
+      font-weight: 400;
+      color: var(--title-color);
+      letter-spacing: 1px;
+      margin-bottom: 20px;
+    }
+    
     #pi {
-      font-size: clamp(1.5rem, 5vw, 3rem); /* responsive */
-      letter-spacing: 2px;
-      text-align: center;
-      max-width: 90%;
-      line-height: 1.6;
-      word-wrap: break-word;
+      font-size: clamp(1.5rem, 5vw, 3rem); /* from source 3 */
+      letter-spacing: 4px; /* from source 4 */
+      line-height: 1.6; /* from source 4 */
+      word-wrap: break-word; /* from source 4 */
+      font-weight: 700;
+      color: var(--accent-color);
+      margin-bottom: 40px;
     }
+
     .digit {
-      opacity: 0;
-      display: inline-block;
-      animation: fadeIn 0.5s forwards;
+      display: inline-block; /* from source 5 */
+      opacity: 0; /* from source 6 */
+      animation: revealDigit 0.6s forwards; /* from source 5, 6 */
     }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.8); }
-      to { opacity: 1; transform: scale(1); }
+    
+    @keyframes revealDigit {
+      from {
+        opacity: 0; /* from source 6 */
+        transform: translateY(15px);
+      }
+      to {
+        opacity: 1; /* from source 7 */
+        transform: translateY(0);
+      }
+    }
+
+    /* --- THEME SWITCHER --- */
+    .theme-switcher {
+      display: flex;
+      gap: 10px;
+      position: absolute;
+      top: 20px;
+      right: 20px;
+    }
+    .theme-button {
+      background-color: transparent;
+      border: 1px solid var(--accent-color);
+      color: var(--accent-color);
+      padding: 8px 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-family: 'Roboto Mono', monospace;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    .theme-button:hover, .theme-button.active {
+      background-color: var(--accent-color);
+      color: var(--bg-color-start);
     }
   </style>
 </head>
-<body>
-  <div id="pi">3.</div>
+<body class="theme-midnight">
+  <div class="theme-switcher">
+    <button class="theme-button active" data-theme="theme-midnight">Midnight</button>
+    <button class="theme-button" data-theme="theme-charcoal">Charcoal</button>
+    <button class="theme-button" data-theme="theme-slate">Slate</button>
+  </div>
+
+  <div class="container">
+    <h1>The Digits of π</h1>
+    <div id="pi">3.</div>
+  </div>
 
   <script>
-    // π digit generator (spigot algorithm)
+    // --- π DIGIT GENERATION LOGIC ---
     function* piGenerator() {
-      let q=1n, r=0n, t=1n, k=1n, n=3n, l=3n;
+      let q = 1n, r = 0n, t = 1n, k = 1n, n = 3n, l = 3n;
       while (true) {
-        if (4n*q+r-t < n*t) {
+        if (4n * q + r - t < n * t) {
           yield Number(n);
-          let nr = 10n*(r-n*t);
-          n = ((10n*(3n*q+r)) / t) - 10n*n;
+          let nr = 10n * (r - n * t);
+          n = ((10n * (3n * q + r)) / t) - 10n * n;
           q *= 10n;
           r = nr;
         } else {
-          let nr = (2n*q+r)*l;
-          let nn = (q*(7n*k+2n)+r*l)/(t*l);
+          let nr = (2n * q + r) * l;
+          let nn = (q * (7n * k + 2n) + r * l) / (t * l);
           q *= k;
           t *= l;
           l += 2n;
@@ -63,7 +150,6 @@
     const piStream = piGenerator();
     const piElement = document.getElementById("pi");
 
-    // Append digits in the center dynamically
     function addDigit() {
       const nextDigit = piStream.next().value;
       const span = document.createElement("span");
@@ -72,8 +158,21 @@
       piElement.appendChild(span);
     }
 
-    // Add a digit every 400ms
+    // Add a new digit every 400ms
     setInterval(addDigit, 400);
+
+    // --- THEME SWITCHER LOGIC ---
+    const themeButtons = document.querySelectorAll('.theme-button');
+    themeButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        // Set the body class to the new theme
+        document.body.className = button.dataset.theme;
+        
+        // Update the active button
+        themeButtons.forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+      });
+    });
   </script>
 </body>
 </html>
